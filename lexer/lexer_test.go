@@ -106,3 +106,93 @@ let result = add(five, ten);
 		}
 	}
 }
+
+func TestNextTokenCodeOperatorTokens(t *testing.T) {
+	input := `!-/*5;
+	5 < 10 > 5;
+	10 == 10;
+	10 != 9;`
+
+	tests := []struct {
+		expectedType    token.TokenType
+		expectedLiteral string
+	}{
+		{token.BANG, "!"},
+		{token.MINUS, "-"},
+		{token.SLASH, "/"},
+		{token.ASTERIK, "*"},
+		{token.INT, "5"},
+		{token.SEMICOLON, ";"},
+		{token.INT, "5"},
+		{token.LT, "<"},
+		{token.INT, "10"},
+		{token.GT, ">"},
+		{token.INT, "5"},
+		{token.SEMICOLON, ";"},
+		{token.INT, "10"},
+		{token.EQ, "=="},
+		{token.INT, "10"},
+		{token.SEMICOLON, ";"},
+		{token.INT, "10"},
+		{token.NOT_EQ, "!="},
+		{token.INT, "9"},
+		{token.SEMICOLON, ";"},
+	}
+
+	lexer := New(input)
+
+	for i, expectedToken := range tests {
+		token := lexer.NextToken()
+
+		if token.Type != expectedToken.expectedType {
+			t.Fatalf("tests[%d] - token type wrong. expected=%q, got=%q", i, expectedToken.expectedType, token.Type)
+		}
+
+		if token.Literal != expectedToken.expectedLiteral {
+			t.Fatalf("tests[%d] - token literal wrong. expected=%q, got=%q", i, expectedToken.expectedLiteral, token.Literal)
+		}
+	}
+}
+
+func TestNextTokenCodeWithKeywords(t *testing.T) {
+	input := `if (5 < 10) {
+		return true
+	} else {
+		return false
+	}`
+
+	tests := []struct {
+		expectedType    token.TokenType
+		expectedLiteral string
+	}{
+		{token.IF, "if"},
+		{token.LPAREN, "("},
+		{token.INT, "5"},
+		{token.LT, "<"},
+		{token.INT, "10"},
+		{token.RPAREN, ")"},
+		{token.LBRACE, "{"},
+		{token.RETURN, "return"},
+		{token.TRUE, "true"},
+		{token.RBRACE, "}"},
+		{token.ELSE, "else"},
+		{token.LBRACE, "{"},
+		{token.RETURN, "return"},
+		{token.FALSE, "false"},
+		{token.RBRACE, "}"},
+	}
+
+	lexer := New(input)
+
+	for i, expectedToken := range tests {
+		token := lexer.NextToken()
+
+		if token.Type != expectedToken.expectedType {
+			t.Fatalf("tests[%d] - token type wrong. expected=%q, got=%q", i, expectedToken.expectedType, token.Type)
+		}
+
+		if token.Literal != expectedToken.expectedLiteral {
+			t.Fatalf("tests[%d] - token literal wrong. expected=%q, got=%q", i, expectedToken.expectedLiteral, token.Literal)
+		}
+	}
+}
