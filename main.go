@@ -2,10 +2,18 @@ package main
 
 import (
 	"fmt"
+	"os"
+	"os/user"
 
-	"github.com/pocmo/monkey-go/token"
+	"github.com/pocmo/monkey-go/repl"
 )
 
 func main() {
-	fmt.Println("Token: " + token.EOF)
+	user, err := user.Current()
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Printf("Hello %s! This is the Monkey programming language!\n", user.Username)
+	repl.Start(os.Stdin, os.Stdout)
 }
